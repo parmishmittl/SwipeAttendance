@@ -15,6 +15,14 @@ public class SwipeRecordKey implements Serializable {
     @Column(name="date",nullable = false)
     private LocalDate date;
 
+    public SwipeRecordKey() {
+    }
+
+    public SwipeRecordKey(Integer empId, LocalDate date) {
+        this.empId = empId;
+        this.date = date;
+    }
+
     public Integer getEmpId() {
         return empId;
     }

@@ -61,31 +61,31 @@ public class SwipeController {
         CustomResponse response = new CustomResponse(200, responseMessage);
         return ResponseEntity.ok(response);
     }
-//    @DeleteMapping("{id}/deleteSwipeRecord")
-//    public ResponseEntity<Object> deleteSwipeRecord(@PathVariable Integer id)
-//    {
-//        Optional<Employee> employee=repository.findById(id);
-//        repository.delete(employee.get()); //deleteById
-//        String responseMessage = "Deleted successfully: " + employee.get().getEmpName() + " (ID: " + employee.get().getEmpId() + ")";
-//        CustomResponse response = new CustomResponse(200, responseMessage);
-//        return ResponseEntity.ok(response);
-//    }
+    @DeleteMapping("{id}/deleteSwipeRecord")
+    public ResponseEntity<Object> deleteSwipeRecord(@RequestBody SwipeRecordKey swipeRecordKey)
+    {
+        Optional<SwipeRecord> swipeRecord=swipeRepository.findById(swipeRecordKey);
+        swipeRepository.delete(swipeRecord.get());
+        String responseMessage = "Swipe Record deleted successfully: for date" + swipeRecord.get().getSwipeRecordKey().getDate() + " (ID: " + swipeRecord.get().getEmpId() + ")";
+        CustomResponse response = new CustomResponse(200, responseMessage);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("{id}/swipeIn")
     public ResponseEntity<Object> swipeIn(@PathVariable Integer id)
     {
-
         Optional<Employee> employee=repository.findById(id);
         if(employee.isEmpty())
         {
             //throw new UserNotFoundException("User Not Found RUntimeExceptionid:"+id);
         }
-
         int controller_id=employee.get().getEmpId();
         SwipeRecord swipeRecord=new SwipeRecord();
         SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
+        swipeRecord.setId((int) Math.random());
         swipeRecordKey.setEmpId(id);
         swipeRecordKey.setDate(LocalDate.now());
+
         swipeRecord.setSwipeIn(LocalDateTime.now());
         swipeRecord.setSwipeRecordKey(swipeRecordKey);
         swipeRepository.save(swipeRecord);
@@ -107,7 +107,7 @@ public class SwipeController {
         int controller_id=employee.get().getEmpId();
         SwipeRecord swipeRecord=new SwipeRecord();
         SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
-
+        swipeRecord.setId((int) Math.random());
         swipeRecordKey.setEmpId(id);
         swipeRecordKey.setDate(LocalDate.now());
         swipeRecord.setSwipeOut(LocalDateTime.now());

@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 public class SwipeRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-//    @Column(name="empId",nullable = false)
-//    private Integer empId;
     private LocalDateTime swipeIn;
     private LocalDateTime swipeOut;
   //  @Column(name="date",nullable = false)
