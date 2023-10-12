@@ -9,14 +9,15 @@ import java.time.LocalDateTime;
 @Table(name = "SwipeRecord", indexes = {
         @Index(name = "idx_empId_date", columnList = "empId, date")})
 public class SwipeRecord {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+//  @Id
+//  @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Integer id;
     private LocalDateTime swipeIn;
     private LocalDateTime swipeOut;
   //  @Column(name="date",nullable = false)
     //private LocalDate date;
 
-    @EmbeddedId
+@EmbeddedId
     private SwipeRecordKey swipeRecordKey;
     public Integer getEmpId()
     {
@@ -29,17 +30,6 @@ public class SwipeRecord {
     public void setSwipeRecordKey(SwipeRecordKey swipeRecordKey) {
         this.swipeRecordKey = swipeRecordKey;
     }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-
-
 
     public LocalDateTime getSwipeIn() {
         return swipeIn;

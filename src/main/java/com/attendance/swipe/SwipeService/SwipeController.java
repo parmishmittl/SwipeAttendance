@@ -74,42 +74,46 @@ public class SwipeController {
     @PostMapping("{id}/swipeIn")
     public ResponseEntity<Object> swipeIn(@PathVariable Integer id)
     {
-        Optional<Employee> employee=repository.findById(id);
-        if(employee.isEmpty())
-        {
-            //throw new UserNotFoundException("User Not Found RUntimeExceptionid:"+id);
-        }
-        int controller_id=employee.get().getEmpId();
-        SwipeRecord swipeRecord=new SwipeRecord();
+        LocalDate now = LocalDate.now();
         SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
-        swipeRecord.setId((int) Math.random());
+        swipeRecordKey.setDate(now);
         swipeRecordKey.setEmpId(id);
-        swipeRecordKey.setDate(LocalDate.now());
-
-        swipeRecord.setSwipeIn(LocalDateTime.now());
-        swipeRecord.setSwipeRecordKey(swipeRecordKey);
-        swipeRepository.save(swipeRecord);
-
-        String responseMessage = "Swipe In Time added successfully: " + swipeRecord.getSwipeIn() + " (ID: " + swipeRecord.getEmpId() + ")";
-        CustomResponse response = new CustomResponse(201, responseMessage);
-        return ResponseEntity.ok(response);
+        Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
+        if(swipeRecordOptional.isPresent())
+        {
+            String responseMessage = "Swipe In Time already exists";
+            CustomResponse response = new CustomResponse(201, responseMessage);
+            return ResponseEntity.ok(response);
+        }
+        else
+        {
+            SwipeRecord swipeRecord=new SwipeRecord();
+            //swipeRecord.setId((int) Math.random()+213);
+            swipeRecord.setSwipeIn(LocalDateTime.now());
+            swipeRecord.setSwipeRecordKey(swipeRecordKey);
+            swipeRepository.save(swipeRecord);
+            String responseMessage = "Swipe In Time added successfully: " + swipeRecord.getSwipeIn() + " (ID: " + swipeRecord.getEmpId() + ")";
+            CustomResponse response = new CustomResponse(201, responseMessage);
+            return ResponseEntity.ok(response);
+        }
 
     }
     @PostMapping("{id}/swipeOut")
     public ResponseEntity<Object> swipeOut(@PathVariable Integer id)
     {
-        Optional<Employee> employee=repository.findById(id);
-        if(employee.isEmpty())
-        {
-            //throw new UserNotFoundException("User Not Found RUntimeExceptionid:"+id);
-        }
-
-        int controller_id=employee.get().getEmpId();
-        SwipeRecord swipeRecord=new SwipeRecord();
+        LocalDate now = LocalDate.now();
         SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
-        swipeRecord.setId((int) Math.random());
+        swipeRecordKey.setDate(now);
         swipeRecordKey.setEmpId(id);
-        swipeRecordKey.setDate(LocalDate.now());
+        Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
+        if(swipeRecordOptional.isEmpty())
+        {
+            ResponseEntity.badRequest();
+        }
+       LocalDateTime firstSwipeInTime=swipeRecordOptional.get().getSwipeIn();
+        SwipeRecord swipeRecord=new SwipeRecord();
+     //   swipeRecord.setId((int) Math.random()+213);
+        swipeRecord.setSwipeIn(firstSwipeInTime);
         swipeRecord.setSwipeOut(LocalDateTime.now());
         swipeRecord.setSwipeRecordKey(swipeRecordKey);
         swipeRepository.save(swipeRecord);
