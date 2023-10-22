@@ -1,17 +1,16 @@
 package com.attendance.swipe.SwipeService;
 
 
-import com.attendance.swipe.SwipeService.Employee.Employee;
-import com.attendance.swipe.SwipeService.Employee.SwipeRecord;
-import com.attendance.swipe.SwipeService.Employee.SwipeRecordKey;
+import com.attendance.swipe.SwipeService.Employee.*;
+import com.attendance.swipe.SwipeService.Kafka.Producer;
 import com.attendance.swipe.SwipeService.dao.EmployeeDaoService;
 import com.attendance.swipe.SwipeService.jpa.EmployeeRepository;
 import com.attendance.swipe.SwipeService.jpa.SwipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -26,7 +25,8 @@ public class SwipeController {
     @Autowired
     EmployeeDaoService employeeDaoService;
 
-
+    @Autowired
+    Producer producer;
     public SwipeController(EmployeeRepository repository, EmployeeDaoService employeeDaoService) {
         this.repository = repository;
         this.employeeDaoService = employeeDaoService;
@@ -61,7 +61,7 @@ public class SwipeController {
         CustomResponse response = new CustomResponse(200, responseMessage);
         return ResponseEntity.ok(response);
     }
-    @DeleteMapping("{id}/deleteSwipeRecord")
+    @DeleteMapping("/deleteSwipeRecord")
     public ResponseEntity<Object> deleteSwipeRecord(@RequestBody SwipeRecordKey swipeRecordKey)
     {
         Optional<SwipeRecord> swipeRecord=swipeRepository.findById(swipeRecordKey);
@@ -123,6 +123,42 @@ public class SwipeController {
 
     }
 
+    @GetMapping("/calculateAttendance")
+    public ResponseEntity<Object> calculateAttendance(@RequestBody SwipeRecordKey swipeRecordKey)
+    {
+        Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
+        if(swipeRecordOptional.isEmpty())
+        {
+            ResponseEntity.badRequest();
+        }
+        LocalDateTime firstSwipeInTime=swipeRecordOptional.get().getSwipeIn();
+        LocalDateTime lastSwipeOutTime=swipeRecordOptional.get().getSwipeOut();
+        Duration inOffice = Duration.between(firstSwipeInTime, lastSwipeOutTime);
+        long inOfficeHours=  inOffice.toHours();
+        String responseMessage=new String() ;
+        if(inOfficeHours>8)
+        {
+            responseMessage="present";
+        }
+        else
+        {
+            if(inOfficeHours<4)
+            {
+                responseMessage="absent";
+            }
+            else
+            {
+                responseMessage="Half Day";
+            }
+}
+        CustomResponse response = new CustomResponse(200, responseMessage);
 
+//       AttendanceEventB2 attendanceEvent=new AttendanceEventB2(swipeRecordKey.getEmpId(),
+//               swipeRecordKey.getDate(),inOfficeHours,responseMessage);
+        AttendanceEvent attendanceEvent= AttendanceEvent.newBuilder().setDate(swipeRecordKey.getDate().toString()).setEmpId(swipeRecordKey.getEmpId()).
+                setStateEmployee(responseMessage).setTotalHours(inOfficeHours).build();
 
+        producer.sendMessage(attendanceEvent);
+        return ResponseEntity.ok(response);
+    }
 }

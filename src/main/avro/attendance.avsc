@@ -1,0 +1,11 @@
+{
+    "type": "record",
+    "name": "AttendanceEvent",
+    "namespace": "com.attendance.swipe.SwipeService.Employee",
+    "fields": [
+        {"name": "empId", "type": "int"},
+        {"name": "date", "type": "string"},
+        {"name": "totalHours", "type": "long"},
+        {"name": "stateEmployee", "type": "string"}
+    ]
+}
