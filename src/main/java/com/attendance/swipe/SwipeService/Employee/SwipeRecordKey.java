@@ -38,5 +38,5 @@ public class SwipeRecordKey implements Serializable {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-// Getters and setters, equals() and hashCode() methods
+
 }

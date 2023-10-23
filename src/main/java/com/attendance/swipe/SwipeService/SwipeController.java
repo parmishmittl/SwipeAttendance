@@ -1,9 +1,11 @@
 package com.attendance.swipe.SwipeService;
 
 
-import com.attendance.swipe.SwipeService.Employee.*;
+import com.attendance.swipe.SwipeService.Employee.AttendanceEvent;
+import com.attendance.swipe.SwipeService.Employee.Employee;
+import com.attendance.swipe.SwipeService.Employee.SwipeRecord;
+import com.attendance.swipe.SwipeService.Employee.SwipeRecordKey;
 import com.attendance.swipe.SwipeService.Kafka.Producer;
-import com.attendance.swipe.SwipeService.dao.EmployeeDaoService;
 import com.attendance.swipe.SwipeService.jpa.EmployeeRepository;
 import com.attendance.swipe.SwipeService.jpa.SwipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +24,12 @@ public class SwipeController {
     private EmployeeRepository repository;
     @Autowired
     private SwipeRepository swipeRepository;
-    @Autowired
-    EmployeeDaoService employeeDaoService;
 
     @Autowired
     Producer producer;
-    public SwipeController(EmployeeRepository repository, EmployeeDaoService employeeDaoService) {
+    public SwipeController(EmployeeRepository repository) {
         this.repository = repository;
-        this.employeeDaoService = employeeDaoService;
     }
-
 
     @GetMapping("/getAllEmployees")
     public Iterable<Employee> getEmployees()
@@ -40,10 +38,7 @@ public class SwipeController {
     }
 
     @PostMapping(path="/add")
-    public @ResponseBody ResponseEntity<Object> addNewEmployee (@RequestParam  String name
-            ) {
-        // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
+    public @ResponseBody ResponseEntity<Object> addNewEmployee (@RequestParam  String name) {
         Employee employee = new Employee();
         employee.setEmpName(name);
         repository.save(employee);
@@ -52,6 +47,7 @@ public class SwipeController {
         return ResponseEntity.ok(response);
 
     }
+
     @DeleteMapping("{id}/deleteEmployee")
     public ResponseEntity<Object> deleteEmployee(@PathVariable Integer id)
     {
@@ -61,6 +57,7 @@ public class SwipeController {
         CustomResponse response = new CustomResponse(200, responseMessage);
         return ResponseEntity.ok(response);
     }
+
     @DeleteMapping("/deleteSwipeRecord")
     public ResponseEntity<Object> deleteSwipeRecord(@RequestBody SwipeRecordKey swipeRecordKey)
     {
@@ -112,7 +109,6 @@ public class SwipeController {
         }
        LocalDateTime firstSwipeInTime=swipeRecordOptional.get().getSwipeIn();
         SwipeRecord swipeRecord=new SwipeRecord();
-     //   swipeRecord.setId((int) Math.random()+213);
         swipeRecord.setSwipeIn(firstSwipeInTime);
         swipeRecord.setSwipeOut(LocalDateTime.now());
         swipeRecord.setSwipeRecordKey(swipeRecordKey);
@@ -152,9 +148,6 @@ public class SwipeController {
             }
 }
         CustomResponse response = new CustomResponse(200, responseMessage);
-
-//       AttendanceEventB2 attendanceEvent=new AttendanceEventB2(swipeRecordKey.getEmpId(),
-//               swipeRecordKey.getDate(),inOfficeHours,responseMessage);
         AttendanceEvent attendanceEvent= AttendanceEvent.newBuilder().setDate(swipeRecordKey.getDate().toString()).setEmpId(swipeRecordKey.getEmpId()).
                 setStateEmployee(responseMessage).setTotalHours(inOfficeHours).build();
 

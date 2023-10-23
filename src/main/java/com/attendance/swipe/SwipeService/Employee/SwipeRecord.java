@@ -9,13 +9,9 @@ import java.time.LocalDateTime;
 @Table(name = "SwipeRecord", indexes = {
         @Index(name = "idx_empId_date", columnList = "empId, date")})
 public class SwipeRecord {
-//  @Id
-//  @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Integer id;
+
     private LocalDateTime swipeIn;
     private LocalDateTime swipeOut;
-  //  @Column(name="date",nullable = false)
-    //private LocalDate date;
 
 @EmbeddedId
     private SwipeRecordKey swipeRecordKey;

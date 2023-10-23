@@ -25,13 +25,13 @@ public class Producer {
 
     public void sendMessage(AttendanceEvent attendanceEvent) {
         try {
-            //String jsonString = objectMapper.writeValueAsString(attendanceEvent);
+
             template.send("AttendanceData",Long.parseLong(String.valueOf(attendanceEvent.getEmpId())),attendanceEvent);
         }
 
         catch (Exception e) {
             e.printStackTrace();
         }
-      // template.send("AttendanceData",12L,"Topic is for Attendance Data");
+
     }
 }
