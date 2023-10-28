@@ -8,9 +8,9 @@ import java.time.LocalDate;
 
 @Embeddable
 public class SwipeRecordKey implements Serializable {
-    @Column(name="empId",nullable = false)
+    @Column(name = "empId", nullable = false)
     private Integer empId;
-    @Column(name="date",nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDate date;
 
     public SwipeRecordKey() {

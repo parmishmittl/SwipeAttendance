@@ -1,8 +1,8 @@
 package com.attendance.swipe.SwipeService;
 
- class CustomResponse {
-    private int code;
-    private String message;
+class CustomResponse {
+    private final int code;
+    private final String message;
 
     public CustomResponse(int code, String message) {
         this.code = code;

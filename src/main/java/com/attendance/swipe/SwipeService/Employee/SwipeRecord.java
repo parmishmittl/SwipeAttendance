@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-@Entity(name="SwipeRecord")
+@Entity(name = "SwipeRecord")
 @Table(name = "SwipeRecord", indexes = {
         @Index(name = "idx_empId_date", columnList = "empId, date")})
 public class SwipeRecord {
@@ -15,12 +15,13 @@ public class SwipeRecord {
     private LocalDateTime swipeIn;
     private LocalDateTime swipeOut;
 
-@EmbeddedId
+    @EmbeddedId
     private SwipeRecordKey swipeRecordKey;
-    public Integer getEmpId()
-    {
+
+    public Integer getEmpId() {
         return swipeRecordKey.getEmpId();
     }
+
     public SwipeRecordKey getSwipeRecordKey() {
         return swipeRecordKey;
     }

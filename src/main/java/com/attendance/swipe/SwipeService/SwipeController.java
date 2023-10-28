@@ -18,28 +18,27 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path="/employees")
+@RequestMapping(path = "/employees")
 public class SwipeController {
     @Autowired
-    private EmployeeRepository repository;
+    Producer producer;
+    @Autowired
+    private final EmployeeRepository repository;
     @Autowired
     private SwipeRepository swipeRepository;
 
-    @Autowired
-    Producer producer;
     public SwipeController(EmployeeRepository repository) {
         this.repository = repository;
     }
 
 
     @GetMapping("/getAllEmployees")
-    public Iterable<Employee> getEmployees()
-    {
+    public Iterable<Employee> getEmployees() {
         return repository.findAll();
     }
 
-    @PostMapping(path="/add")
-    public @ResponseBody ResponseEntity<Object> addNewEmployee (@RequestParam  String name) {
+    @PostMapping(path = "/add")
+    public @ResponseBody ResponseEntity<Object> addNewEmployee(@RequestParam String name) {
         Employee employee = new Employee();
         employee.setEmpName(name);
         repository.save(employee);
@@ -50,9 +49,8 @@ public class SwipeController {
     }
 
     @DeleteMapping("{id}/deleteEmployee")
-    public ResponseEntity<Object> deleteEmployee(@PathVariable Integer id)
-    {
-        Optional<Employee> employee=repository.findById(id);
+    public ResponseEntity<Object> deleteEmployee(@PathVariable Integer id) {
+        Optional<Employee> employee = repository.findById(id);
         repository.delete(employee.get()); //deleteById
         String responseMessage = "Deleted successfully: " + employee.get().getEmpName() + " (ID: " + employee.get().getEmpId() + ")";
         CustomResponse response = new CustomResponse(200, responseMessage);
@@ -60,9 +58,8 @@ public class SwipeController {
     }
 
     @DeleteMapping("/deleteSwipeRecord")
-    public ResponseEntity<Object> deleteSwipeRecord(@RequestBody SwipeRecordKey swipeRecordKey)
-    {
-        Optional<SwipeRecord> swipeRecord=swipeRepository.findById(swipeRecordKey);
+    public ResponseEntity<Object> deleteSwipeRecord(@RequestBody SwipeRecordKey swipeRecordKey) {
+        Optional<SwipeRecord> swipeRecord = swipeRepository.findById(swipeRecordKey);
         swipeRepository.delete(swipeRecord.get());
         String responseMessage = "Swipe Record deleted successfully: for date" + swipeRecord.get().getSwipeRecordKey().getDate() + " (ID: " + swipeRecord.get().getEmpId() + ")";
         CustomResponse response = new CustomResponse(200, responseMessage);
@@ -70,22 +67,18 @@ public class SwipeController {
     }
 
     @PostMapping("{id}/swipeIn")
-    public ResponseEntity<Object> swipeIn(@PathVariable Integer id)
-    {
+    public ResponseEntity<Object> swipeIn(@PathVariable Integer id) {
         LocalDate now = LocalDate.now();
-        SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
+        SwipeRecordKey swipeRecordKey = new SwipeRecordKey();
         swipeRecordKey.setDate(now);
         swipeRecordKey.setEmpId(id);
         Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
-        if(swipeRecordOptional.isPresent())
-        {
+        if (swipeRecordOptional.isPresent()) {
             String responseMessage = "Swipe In Time already exists";
             CustomResponse response = new CustomResponse(201, responseMessage);
             return ResponseEntity.ok(response);
-        }
-        else
-        {
-            SwipeRecord swipeRecord=new SwipeRecord();
+        } else {
+            SwipeRecord swipeRecord = new SwipeRecord();
             //swipeRecord.setId((int) Math.random()+213);
             swipeRecord.setSwipeIn(LocalDateTime.now());
             swipeRecord.setSwipeRecordKey(swipeRecordKey);
@@ -96,20 +89,19 @@ public class SwipeController {
         }
 
     }
+
     @PostMapping("{id}/swipeOut")
-    public ResponseEntity<Object> swipeOut(@PathVariable Integer id)
-    {
+    public ResponseEntity<Object> swipeOut(@PathVariable Integer id) {
         LocalDate now = LocalDate.now();
-        SwipeRecordKey swipeRecordKey=new SwipeRecordKey();
+        SwipeRecordKey swipeRecordKey = new SwipeRecordKey();
         swipeRecordKey.setDate(now);
         swipeRecordKey.setEmpId(id);
         Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
-        if(swipeRecordOptional.isEmpty())
-        {
+        if (swipeRecordOptional.isEmpty()) {
             ResponseEntity.badRequest();
         }
-       LocalDateTime firstSwipeInTime=swipeRecordOptional.get().getSwipeIn();
-        SwipeRecord swipeRecord=new SwipeRecord();
+        LocalDateTime firstSwipeInTime = swipeRecordOptional.get().getSwipeIn();
+        SwipeRecord swipeRecord = new SwipeRecord();
         swipeRecord.setSwipeIn(firstSwipeInTime);
         swipeRecord.setSwipeOut(LocalDateTime.now());
         swipeRecord.setSwipeRecordKey(swipeRecordKey);
@@ -121,35 +113,27 @@ public class SwipeController {
     }
 
     @GetMapping("/calculateAttendance")
-    public ResponseEntity<Object> calculateAttendance(@RequestBody SwipeRecordKey swipeRecordKey)
-    {
+    public ResponseEntity<Object> calculateAttendance(@RequestBody SwipeRecordKey swipeRecordKey) {
         Optional<SwipeRecord> swipeRecordOptional = swipeRepository.findById(swipeRecordKey);
-        if(swipeRecordOptional.isEmpty())
-        {
+        if (swipeRecordOptional.isEmpty()) {
             ResponseEntity.badRequest();
         }
-        LocalDateTime firstSwipeInTime=swipeRecordOptional.get().getSwipeIn();
-        LocalDateTime lastSwipeOutTime=swipeRecordOptional.get().getSwipeOut();
+        LocalDateTime firstSwipeInTime = swipeRecordOptional.get().getSwipeIn();
+        LocalDateTime lastSwipeOutTime = swipeRecordOptional.get().getSwipeOut();
         Duration inOffice = Duration.between(firstSwipeInTime, lastSwipeOutTime);
-        long inOfficeHours=  inOffice.toHours();
-        String responseMessage=new String() ;
-        if(inOfficeHours>8)
-        {
-            responseMessage="present";
+        long inOfficeHours = inOffice.toHours();
+        String responseMessage = "";
+        if (inOfficeHours > 8) {
+            responseMessage = "present";
+        } else {
+            if (inOfficeHours < 4) {
+                responseMessage = "absent";
+            } else {
+                responseMessage = "Half Day";
+            }
         }
-        else
-        {
-            if(inOfficeHours<4)
-            {
-                responseMessage="absent";
-            }
-            else
-            {
-                responseMessage="Half Day";
-            }
-}
         CustomResponse response = new CustomResponse(200, responseMessage);
-        AttendanceEvent attendanceEvent= AttendanceEvent.newBuilder().setDate(swipeRecordKey.getDate().toString()).setEmpId(swipeRecordKey.getEmpId()).
+        AttendanceEvent attendanceEvent = AttendanceEvent.newBuilder().setDate(swipeRecordKey.getDate().toString()).setEmpId(swipeRecordKey.getEmpId()).
                 setStateEmployee(responseMessage).setTotalHours(inOfficeHours).build();
 
         producer.sendMessage(attendanceEvent);

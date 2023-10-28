@@ -6,11 +6,12 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Employee {
-public Employee() {}
-private String empName;
-@Id
-@GeneratedValue
-private Integer empId;
+    private String empName;
+    @Id
+    @GeneratedValue
+    private Integer empId;
+    public Employee() {
+    }
 
     public Employee(String empName, Integer empId) {
         this.empName = empName;

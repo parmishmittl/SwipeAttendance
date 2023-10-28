@@ -12,10 +12,17 @@ public class AttendanceEventB2 {
     @Id
     @GeneratedValue
     private Integer empId;
-    @Column(name="date",nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDate date;
     private long totalHours;
     private String stateEmployee;
+
+    public AttendanceEventB2(Integer empId, LocalDate date, long totalHours, String stateEmployee) {
+        this.empId = empId;
+        this.date = date;
+        this.totalHours = totalHours;
+        this.stateEmployee = stateEmployee;
+    }
 
     public Integer getEmpId() {
         return empId;
@@ -49,12 +56,6 @@ public class AttendanceEventB2 {
         this.stateEmployee = stateEmployee;
     }
 
-    public AttendanceEventB2(Integer empId, LocalDate date, long totalHours, String stateEmployee) {
-        this.empId = empId;
-        this.date = date;
-        this.totalHours = totalHours;
-        this.stateEmployee = stateEmployee;
-    }
     @Override
     public String toString() {
         return "AttendanceEvent{" +

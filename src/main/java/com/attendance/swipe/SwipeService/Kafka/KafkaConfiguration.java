@@ -25,46 +25,41 @@ import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 
 @Configuration
 public class KafkaConfiguration {
-    @Bean
-    KafkaTemplate<Long, AttendanceEvent> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
     @Value("${spring.kafka.properties.bootstrap.servers}")
     private String bootstrapServers;
-
     @Value("${spring.kafka.properties.sasl.jaas.config}")
     private String saslJaasConfig;
-
     @Value("${spring.kafka.properties.sasl.mechanism}")
     private String saslMechanism;
-
     @Value("${spring.kafka.properties.security.protocol}")
     private String securityProtocol;
-
     @Value("${spring.kafka.properties.basic.auth.credentials.source}")
-    private String credentialSource ;
-
+    private String credentialSource;
     @Value("${spring.kafka.properties.basic.auth.user.info}")
     private String userInfo;
-
     @Value("${spring.kafka.properties.schema.registry.url}")
     private String schemaRegistryUrl;
 
     @Bean
-    ProducerFactory<Long, AttendanceEvent> producerFactory() {
-       Map<String,Object> producerProperties=new HashMap<>();
-        producerProperties.put(BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        producerProperties.put(  RETRIES_CONFIG, 0);
-        producerProperties.put(  BUFFER_MEMORY_CONFIG, 33554432);
-        producerProperties.put(  KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
-        producerProperties.put(  VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        producerProperties.put(  SASL_JAAS_CONFIG, saslJaasConfig);
-        producerProperties.put(  SASL_MECHANISM, saslMechanism);
-        producerProperties.put(  CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
+    KafkaTemplate<Long, AttendanceEvent> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
 
-        producerProperties.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,schemaRegistryUrl);
-        producerProperties.put(AbstractKafkaAvroSerDeConfig.USER_INFO_CONFIG,userInfo);
-        producerProperties.put(AbstractKafkaAvroSerDeConfig.BASIC_AUTH_CREDENTIALS_SOURCE,credentialSource);
+    @Bean
+    ProducerFactory<Long, AttendanceEvent> producerFactory() {
+        Map<String, Object> producerProperties = new HashMap<>();
+        producerProperties.put(BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        producerProperties.put(RETRIES_CONFIG, 0);
+        producerProperties.put(BUFFER_MEMORY_CONFIG, 33554432);
+        producerProperties.put(KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
+        producerProperties.put(VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        producerProperties.put(SASL_JAAS_CONFIG, saslJaasConfig);
+        producerProperties.put(SASL_MECHANISM, saslMechanism);
+        producerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
+
+        producerProperties.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        producerProperties.put(AbstractKafkaAvroSerDeConfig.USER_INFO_CONFIG, userInfo);
+        producerProperties.put(AbstractKafkaAvroSerDeConfig.BASIC_AUTH_CREDENTIALS_SOURCE, credentialSource);
         return new DefaultKafkaProducerFactory<>(producerProperties);
 
     }

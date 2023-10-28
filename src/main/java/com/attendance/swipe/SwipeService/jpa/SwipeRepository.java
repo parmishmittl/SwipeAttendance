@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface SwipeRepository  extends CrudRepository<SwipeRecord, SwipeRecordKey> {
-
+public interface SwipeRepository extends CrudRepository<SwipeRecord, SwipeRecordKey> {
 
 
 }
