@@ -1,8 +1,10 @@
 package com.attendance.swipe.SwipeService.Employee;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name="SwipeRecord")

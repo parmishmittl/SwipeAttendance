@@ -31,6 +31,7 @@ public class SwipeController {
         this.repository = repository;
     }
 
+
     @GetMapping("/getAllEmployees")
     public Iterable<Employee> getEmployees()
     {

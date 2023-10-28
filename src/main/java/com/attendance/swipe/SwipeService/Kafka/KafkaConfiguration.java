@@ -2,7 +2,6 @@ package com.attendance.swipe.SwipeService.Kafka;
 
 
 import com.attendance.swipe.SwipeService.Employee.AttendanceEvent;
-import com.attendance.swipe.SwipeService.Employee.AttendanceEventB2;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
